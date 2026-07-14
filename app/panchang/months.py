@@ -114,23 +114,38 @@ def lunar_month(sunrise_jd: float, angle_funcs) -> dict:
 
 
 # --- Samvatsara + years -----------------------------------------------------
-def samvatsara_and_years(sunrise_jd: float, angle_funcs, gregorian_year: int) -> dict:
+def _is_before_chaitra_new_year(gregorian_month: int, amanta_idx: int) -> bool:
+    """Is a date (given its Gregorian month + amanta lunar-month index) before
+    that Gregorian year's Chaitra Shukla Pratipada (the lunar new year)?
+
+    Chaitra Shukla Pratipada always falls in **March or April**, so:
+      * Jan/Feb are unconditionally before it (covers even the rare
+        Margashirsha/Pausha-in-January carry-over).
+      * In Mar/Apr, only the pre-Chaitra lunar months (Pausha=9, Magha=10,
+        Phalguna=11) are still the previous year; once Chaitra (idx 0) begins,
+        the year has flipped.
+      * May..Dec are always after it — including a December Pausha (idx 9),
+        which belongs to the *current* Shaka year, unlike a January Pausha.
+    """
+    if gregorian_month <= 2:
+        return True
+    if gregorian_month in (3, 4) and amanta_idx in (9, 10, 11):
+        return True
+    return False
+
+
+def samvatsara_and_years(
+    gregorian_year: int, gregorian_month: int, amanta_idx: int
+) -> dict:
     """Shaka & Vikram year numbers and the 60-year samvatsara name.
 
-    Year boundaries follow the lunar new year (Chaitra Shukla Pratipada). We
-    approximate the boundary by the Sun's sidereal longitude: the Shaka/Vikram
-    year increments around the Mesha ingress / Chaitra, so a date whose amanta
-    month is Phalguna-or-earlier in the Gregorian year start belongs to the
-    previous elapsed year.
+    The Shaka/Vikram year increments at Chaitra Shukla Pratipada (lunar new
+    year, ~late Mar/Apr). A date before that point in the Gregorian year still
+    belongs to the previous elapsed year (see :func:`_is_before_chaitra_new_year`).
     """
-    lm = lunar_month(sunrise_jd, angle_funcs)
-    amanta_idx = lm["amanta_index"]
-
     # Shaka elapsed year: Gregorian - 78, minus 1 before Chaitra new year.
-    # amanta_idx 0 == Chaitra; months Magha(10)/Phalguna(11) at the start of a
-    # Gregorian year are still the *previous* Shaka year.
     shaka = gregorian_year - 78
-    if amanta_idx >= 10:  # Magha, Phalguna -> before Chaitra rollover
+    if _is_before_chaitra_new_year(gregorian_month, amanta_idx):
         shaka -= 1
     vikram = shaka + 135  # Vikram Samvat = Shaka + 135
 

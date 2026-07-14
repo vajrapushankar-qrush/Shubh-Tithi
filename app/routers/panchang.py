@@ -1,6 +1,7 @@
 """GET /v1/panchang and /v1/panchang/range."""
 from __future__ import annotations
 
+import hashlib
 from datetime import date, timedelta
 
 from fastapi import APIRouter, Depends, Query
@@ -10,6 +11,7 @@ from app.cache.city_cache import ensure_city_cached
 from app.config import get_settings
 from app.db import City
 from app.geo.search import get_city
+from app.geo.tz import timezone_at
 from app.panchang.derive import derive_panchang
 
 router = APIRouter(prefix="/v1", tags=["panchang"])
@@ -20,16 +22,17 @@ _ADHOC_BASE = 900_000_000
 
 
 def _adhoc_id(lat: float, lon: float, tz: str) -> int:
+    # Stable across processes/restarts — Python's built-in hash() is per-process
+    # randomised, which would mint a fresh id (and full recompute) every restart.
     key = f"{round(lat, 4)}|{round(lon, 4)}|{tz}"
-    return _ADHOC_BASE + (abs(hash(key)) % 90_000_000)
+    digest = int(hashlib.md5(key.encode()).hexdigest()[:8], 16)
+    return _ADHOC_BASE + (digest % 90_000_000)
 
 
 def _resolve_tz(lat: float, lon: float, tz: str | None) -> str:
     if tz:
         return tz
-    from timezonefinder import TimezoneFinder
-
-    found = TimezoneFinder().timezone_at(lat=lat, lng=lon)
+    found = timezone_at(lat, lon)
     if not found:
         raise ApiError(422, "tz_unresolved",
                        "Could not resolve timezone from coordinates; pass tz explicitly.")

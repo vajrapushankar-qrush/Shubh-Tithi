@@ -20,6 +20,9 @@ data/*.db-wal
 # Swiss Ephemeris data files (optional, user-downloaded)
 data/ephe/
 
+# Build / distribution artifacts
+*.zip
+
 # OS / editor
 .DS_Store
 .idea/

@@ -6,6 +6,7 @@ from datetime import date, time
 from fastapi import APIRouter, Query
 
 from app.api import ApiError
+from app.geo.tz import timezone_at
 from app.panchang.instant import nakshatra_at
 
 router = APIRouter(prefix="/v1", tags=["nakshatra"])
@@ -22,9 +23,7 @@ def nakshatra_at_endpoint(
 ):
     tzname = tz
     if tzname is None:
-        from timezonefinder import TimezoneFinder
-
-        tzname = TimezoneFinder().timezone_at(lat=lat, lng=lon)
+        tzname = timezone_at(lat, lon)
         if not tzname:
             raise ApiError(422, "tz_unresolved",
                            "Could not resolve timezone; pass tz explicitly.")

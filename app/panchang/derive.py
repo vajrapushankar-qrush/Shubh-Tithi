@@ -154,11 +154,14 @@ def derive_panchang(session, city, d: date) -> dict:
         for idx, _s, end in tithi_segs
     ]
 
-    # --- Nakshatra list (pada from moon longitude at each segment start) ---
+    # --- Nakshatra list ---
+    # Pada only makes sense for the nakshatra prevailing *at sunrise* (the moon
+    # is at that nakshatra's start for every later segment, so its pada would
+    # always be 1). Report pada for the first entry, omit it for the rest.
     nak_segs = _segments(session, "nakshatra", sunrise, next_sunrise)
     nakshatras = []
-    for idx, seg_start, end in nak_segs:
-        pada = elements.nakshatra_pada(moon_longitude(seg_start))
+    for i, (idx, _seg_start, end) in enumerate(nak_segs):
+        pada = elements.nakshatra_pada(moon_sr) if i == 0 else None
         nakshatras.append({**elements.describe_nakshatra(idx, pada), "end": _render(end, tz)})
 
     # --- Yoga list ---
@@ -212,7 +215,7 @@ def derive_panchang(session, city, d: date) -> dict:
     # --- Month / samvatsara / years ---
     tithi_no_at_sunrise = tithis[0]["number"] if tithis else 1
     lm = _lunar_month(session, sunrise, tithi_no_at_sunrise)
-    years = months.samvatsara_and_years(sunrise, elements.make_angle_funcs(), d.year)
+    years = months.samvatsara_and_years(d.year, d.month, lm["amanta_index"])
 
     # --- Solar months ---
     solar = _solar_month(session, sunrise, tz)

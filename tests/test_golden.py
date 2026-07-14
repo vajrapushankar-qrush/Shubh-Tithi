@@ -90,3 +90,13 @@ def test_panchang_structure_is_complete(panchang_for):
     assert p["auspicious"]["abhijit_muhurat"]["start"]
     assert len(p["choghadiya"]["day"]) == 8 and len(p["choghadiya"]["night"]) == 8
     assert p["choghadiya"]["day"][0]["quality"] in ("good", "neutral", "bad")
+
+
+def test_nakshatra_pada_only_on_sunrise_entry(panchang_for):
+    """Pada is meaningful only for the sunrise nakshatra; later entries (which
+    always start at pada 1) omit it. New York 2026-07-14 has two nakshatras."""
+    p = panchang_for("new_york", date(2026, 7, 14))
+    naks = p["nakshatra"]
+    assert len(naks) >= 2
+    assert naks[0]["name"] == "Punarvasu" and naks[0]["pada"] == 3
+    assert "pada" not in naks[1]           # Pushya (starts at pada 1) — omitted
