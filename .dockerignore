@@ -1,0 +1,24 @@
+# Keep the build context small and never ship host-only artifacts.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.git/
+.gitignore
+.env
+*.zip
+
+# Local cache DBs (the container regenerates / uses a mounted volume).
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/ephe/
+
+# Tests aren't needed in the runtime image.
+tests/
+
+.DS_Store
+.idea/
+.vscode/
