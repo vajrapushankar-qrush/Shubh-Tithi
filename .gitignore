@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Virtual envs
+.venv/
+venv/
+
+# Environment
+.env
+
+# Cache database (regenerated on first run) — keep the bundled geo seed.
+data/*.db
+data/*.db-journal
+data/*.db-wal
+
+# Swiss Ephemeris data files (optional, user-downloaded)
+data/ephe/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
