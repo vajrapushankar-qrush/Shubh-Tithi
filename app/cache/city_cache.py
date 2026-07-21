@@ -41,7 +41,7 @@ def compute_rise_set(d: date, tz: ZoneInfo, lat: float, lon: float) -> dict:
     """Sun/Moon rise & set for calendar date ``d`` at the location.
 
     Sun uses the configured convention (default: apparent upper-limb with
-    refraction, matching Drik Panchang). Moon rise/set are constrained to the
+    refraction, matching published almanacs). Moon rise/set are constrained to the
     calendar day (``None`` when the Moon does not rise/set that day)."""
     settings = get_settings()
     jd0 = _local_midnight_jd(d, tz)

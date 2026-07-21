@@ -1,12 +1,12 @@
-"""Golden tests against Drik Panchang (https://www.drikpanchang.com).
+"""Golden tests against an independent published Panchangam almanac.
 
 HOW TO USE
 ----------
 Each fixture below is a real (city, date) whose expected values must be filled
-in FROM DRIK PANCHANG and verified by a human. Until an ``expected`` block is
+in FROM THE REFERENCE ALMANAC and verified by a human. Until an ``expected`` block is
 filled (its fields are non-None), that case is skipped with a clear message.
 
-To fill a fixture: open Drik Panchang for the city + date, read the sunrise-tithi
+To fill a fixture: open the reference almanac for the city + date, read the sunrise-tithi
 name/paksha and its end time (local), the sunrise nakshatra and its end time,
 then paste them below. End times are compared to the minute.
 
@@ -21,7 +21,7 @@ from datetime import date, datetime
 
 import pytest
 
-# --- TODO: fill each `expected` from Drik Panchang and set verified=True ------
+# --- TODO: fill each `expected` from the reference almanac, set verified=True -
 GOLDEN = [
     {
         "id": "hyderabad-2026-08-15",
@@ -51,7 +51,7 @@ def _minute(iso_local: str) -> str:
 
 
 @pytest.mark.parametrize("fx", GOLDEN, ids=[f["id"] for f in GOLDEN])
-def test_golden_against_drik(fx, panchang_for):
+def test_golden_against_reference(fx, panchang_for):
     if fx["date"] is None or not fx["expected"]:
         pytest.skip(f"TODO fixture not filled: {fx['id']}"
                     + (f" — {fx.get('note')}" if fx.get("note") else ""))

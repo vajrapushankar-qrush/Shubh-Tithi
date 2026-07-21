@@ -53,7 +53,7 @@ class Settings(BaseSettings):
     )
 
     # --- Astronomical conventions (see astronomy.core for rationale) -------
-    # Default rise/set flags match Drik Panchang: apparent (refraction) upper limb.
+    # Default rise/set flags match published almanacs: apparent (refraction) upper limb.
     sunrise_upper_limb: bool = True
     sunrise_refraction: bool = True
 

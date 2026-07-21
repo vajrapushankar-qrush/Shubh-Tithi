@@ -35,8 +35,8 @@ def test_ayanamsa_is_lahiri_in_worker_thread():
     )
 
 
-def test_nakshatra_matches_drik_via_api(panchang_for):
-    """New York, 14 Jul 2026: Punarvasu ends 02:39 PM local (Drik Panchang).
+def test_nakshatra_matches_reference_via_api(panchang_for):
+    """New York, 14 Jul 2026: Punarvasu ends 02:39 PM local (published almanac).
 
     `panchang_for` runs through the same code path used by the API; this pins the
     absolute-longitude result that the thread bug used to shift by ~1.5 hours.

@@ -45,7 +45,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="ShubhTithi",
     version="0.1.0",
-    summary="Hindu Panchang (almanac) computation API — sidereal, Lahiri, Drik-aligned.",
+    summary="Hindu Panchang (almanac) computation API — sidereal, Lahiri ayanamsa.",
     description=(
         "Open-source Panchang service built on Swiss Ephemeris. Computes tithi, "
         "nakshatra, yoga, karana, vara, sun/moon timings, inauspicious windows, "

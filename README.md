@@ -8,7 +8,7 @@ months, rashi, eclipses and more — for any city on Earth, any date — using t
 [Swiss Ephemeris](https://www.astro.com/swisseph/) for all astronomy.
 
 All calculations are **sidereal with Lahiri ayanamsa** and follow the
-conventions of [Drik Panchang](https://www.drikpanchang.com), so results are
+conventions used by traditional Panchangam publishers, so results are
 directly comparable.
 
 - **No frontend.** Consumed over HTTP (test with Postman/curl). Interactive docs
@@ -181,7 +181,7 @@ Status, ephemeris version + ayanamsa, and cache statistics.
 - **Hindu day = local sunrise → next sunrise.** Each anga "for a date" is the one
   prevailing at that day's sunrise; end times are reported.
 - **Sunrise/sunset = apparent rise/set of the upper limb with refraction** — the
-  Swiss Ephemeris default and the Drik Panchang convention. Both aspects are
+  Swiss Ephemeris default and the convention published almanacs use. Both aspects are
   configurable (`SHUBHTITHI_SUNRISE_UPPER_LIMB`, `_REFRACTION`); see the comment
   in [`app/astronomy/core.py`](app/astronomy/core.py).
 - **Element boundaries are global instants in UT**, found by bracketing then
@@ -190,7 +190,7 @@ Status, ephemeris version + ayanamsa, and cache statistics.
 - Index math: `tithi = ⌊(moon−sun)/12°⌋`, `nakshatra = ⌊moon/13°20′⌋`,
   `yoga = ⌊(sun+moon)/13°20′⌋`, `karana = ⌊(moon−sun)/6°⌋` — all sidereal.
 
-### Comparing with Drik Panchang
+### Comparing with a published almanac
 
 Pick a city + date on both. Element **names** and **paksha** should match
 exactly. **End times** should match to the minute when using downloaded Swiss
@@ -245,7 +245,7 @@ uv run pytest            # unit + integration tests
 Tests include element index math, per-weekday Rahu/Yamaganda/Gulika segments,
 Abhijit, a timezone-edge case (tithi ending after local midnight), eclipse
 detection + visibility, and solar-month/sankranti checks. **Golden fixtures**
-comparing to Drik Panchang are scaffolded in
+comparing to a published reference almanac are scaffolded in
 [`tests/test_golden.py`](tests/test_golden.py) with clearly-marked `TODO`s to
 fill in verified values (New York, London, Hyderabad, Bengaluru, plus
 kshaya/vriddhi and adhika-masa days).

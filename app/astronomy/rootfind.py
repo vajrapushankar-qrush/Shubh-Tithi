@@ -13,7 +13,7 @@ timescale of interest:
 Because the driving angle is monotonic, each ``unit`` boundary is crossed
 exactly once and we can bracket-then-bisect to the crossing instant. We do NOT
 approximate boundaries by daily interpolation — we solve for the true instant to
-sub-second precision (well past the minute precision Drik Panchang reports).
+sub-second precision (well past the minute precision published almanacs report).
 """
 from __future__ import annotations
 

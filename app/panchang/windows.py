@@ -81,7 +81,7 @@ def choghadiya(
     """Return {'day': [...8 bands], 'night': [...8 bands]}.
 
     Day first band index = (weekday*3) mod 7 (Sun=Udveg, Mon=Amrit, ...);
-    night first band = day first + 5 (mod 7). Verified against Drik Panchang.
+    night first band = day first + 5 (mod 7). Verified against a published almanac.
     """
     day_start = (weekday_sun0 * 3) % 7
     night_start = (day_start + 5) % 7

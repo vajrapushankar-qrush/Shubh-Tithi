@@ -5,7 +5,7 @@ Naming rule (amanta): a lunar month runs new-moon -> new-moon; it is named after
 the solar month (rashi) the Sun *enters* during that lunar month. If the Sun
 enters no new rashi within the lunar month (i.e. two new moons fall inside one
 solar month), that month is an **adhika masa** (intercalary) and borrows the name
-of the following nija month. This matches Drik Panchang for ordinary months; the
+of the following nija month. This matches published almanacs for ordinary months; the
 adhika-masa naming edge is pinned by a golden test.
 
 Purnimanta reckoning shares the amanta name during Shukla paksha and takes the

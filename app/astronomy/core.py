@@ -1,12 +1,12 @@
 """Swiss Ephemeris wrappers — the *only* place we touch pyswisseph.
 
-Conventions (must match Drik Panchang):
+Conventions (must match published Panchangam almanacs):
 
 * **Sidereal zodiac, Lahiri ayanamsa** (``swe.SIDM_LAHIRI``) for every planetary
   longitude used in Panchang element math.
 * **Sunrise / sunset**: apparent rise/set of the **upper limb with atmospheric
   refraction** — Swiss Ephemeris' default when neither ``BIT_DISC_CENTER`` nor
-  ``BIT_NO_REFRACTION`` is passed. This is the convention Drik Panchang uses, so
+  ``BIT_NO_REFRACTION`` is passed. This is the convention published almanacs use, so
   it is our default; both aspects are configurable (see :class:`app.config`).
 * All element boundaries are computed as **global instants in UT** and only
   rendered into a city's local timezone at the presentation layer.
@@ -148,7 +148,7 @@ def rise_set(
     """
     _ensure_thread()
     rsmi = swe.CALC_RISE if rising else swe.CALC_SET
-    # Defaults (no extra bits) = upper limb + refraction = Drik Panchang style.
+    # Defaults (no extra bits) = upper limb + refraction = published-almanac style.
     if not upper_limb:
         rsmi |= swe.BIT_DISC_CENTER
     if not refraction:
