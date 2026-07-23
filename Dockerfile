@@ -24,5 +24,7 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY . .
 RUN uv sync --frozen --no-dev
 
-# Railway injects $PORT; bind 0.0.0.0. Shell form so ${PORT} expands.
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Railway injects $PORT. Bind :: (IPv6, dual-stack) so BOTH the public proxy and
+# Railway private networking (IPv6-only) can reach us; 0.0.0.0 is IPv4-only and
+# is unreachable over .railway.internal. Shell form so ${PORT} expands.
+CMD ["sh", "-c", "uvicorn app.main:app --host :: --port ${PORT:-8000}"]
