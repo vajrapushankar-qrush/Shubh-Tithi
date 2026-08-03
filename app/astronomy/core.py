@@ -29,6 +29,21 @@ import swisseph as swe
 SUN = swe.SUN
 MOON = swe.MOON
 
+# The nine grahas. Rahu is the **mean** lunar node (``swe.MEAN_NODE``); Ketu is
+# not a Swiss Ephemeris body at all — it is always Rahu + 180deg exactly, so it
+# is derived rather than calculated. Mean (not true) node is the classical
+# Vedic convention and the one every Indian almanac uses.
+GRAHA_BODIES: dict[str, int] = {
+    "Sun": swe.SUN,
+    "Moon": swe.MOON,
+    "Mars": swe.MARS,
+    "Mercury": swe.MERCURY,
+    "Jupiter": swe.JUPITER,
+    "Venus": swe.VENUS,
+    "Saturn": swe.SATURN,
+    "Rahu": swe.MEAN_NODE,
+}
+
 # IMPORTANT: pyswisseph is built thread-safe — the ephemeris path and, crucially,
 # the *sidereal mode* (ayanamsa) are stored per thread. FastAPI runs sync
 # endpoints in a worker-thread pool, so a mode set once at startup on the main
@@ -126,6 +141,42 @@ def sun_moon_longitudes(jd: float) -> tuple[float, float]:
 def ayanamsa(jd: float) -> float:
     _ensure_thread()
     return swe.get_ayanamsa_ut(jd)
+
+
+def longitude_and_speed(jd: float, body: int) -> tuple[float, float]:
+    """Sidereal (Lahiri) longitude in degrees and daily motion in deg/day.
+
+    A negative speed means retrograde motion.
+    """
+    _ensure_thread()
+    flags = _calc_flag | swe.FLG_SIDEREAL | swe.FLG_SPEED
+    values, _ = swe.calc_ut(jd, body, flags)
+    return values[0] % 360.0, values[3]
+
+
+# --- Ascendant -------------------------------------------------------------
+def ascendant(jd: float, lat: float, lon: float) -> float:
+    """Sidereal (Lahiri) ascendant longitude in degrees.
+
+    Uses ``houses_ex`` with the ``W`` (whole-sign) house system and
+    ``FLG_SIDEREAL``, so the ayanamsa is applied inside Swiss Ephemeris rather
+    than subtracted afterwards. Only the ascendant is taken from the result:
+    under whole sign the twelve houses are just the twelve rashis starting at
+    the ascendant's rashi, so we derive them arithmetically (see
+    :mod:`app.jyotish.chart`) instead of trusting cusp array indexing.
+
+    Raises :class:`ValueError` if Swiss Ephemeris cannot compute an ascendant
+    (only at the geographic poles, where it is undefined).
+    """
+    _ensure_thread()
+    try:
+        _cusps, ascmc = swe.houses_ex(jd, lat, lon, b"W", swe.FLG_SIDEREAL)
+    except Exception as exc:  # pragma: no cover - swisseph raises bare Error
+        raise ValueError(f"ascendant undefined at lat={lat}: {exc}") from exc
+    asc = ascmc[0]
+    if asc != asc:  # NaN guard
+        raise ValueError(f"ascendant undefined at lat={lat}")
+    return asc % 360.0
 
 
 # --- Rise / set / transit --------------------------------------------------

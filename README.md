@@ -169,6 +169,26 @@ curl "http://127.0.0.1:8000/v1/nakshatra-at?date=1990-04-21&time=14:35:00&lat=17
 response includes `"time_assumed": "sunrise"` (a common janma-nakshatra
 convention when birth time is unknown).
 
+### `GET /v1/chart` — natal chart (kundali) at an instant
+
+```bash
+curl "http://127.0.0.1:8000/v1/chart?date=1984-04-24&time=21:06:00&tz=Asia/Kolkata&lat=17.0&lon=82.2"
+```
+
+Returns the sidereal ascendant, all nine grahas (longitude, rashi, nakshatra +
+pada, degree-in-sign, **whole-sign house**, retrograde), the twelve houses, the
+**navamsa (D9)** chart, the **Vimshottari dasha** tree (mahadasha +
+antardasha, full 120-year cycle from birth), and manglik / kaal sarp / sade
+sati flags.
+
+`time` is **required** here — unlike `/v1/nakshatra-at` there is no sunrise
+fallback, because an assumed birth time makes the ascendant and all twelve
+houses wrong rather than merely approximate.
+
+House system is **whole sign**; Rahu is the **mean** node and Ketu is exactly
+opposite it. Full semantics, a worked example and the list of what is *not*
+implemented: [`docs/CHART-API.md`](docs/CHART-API.md).
+
 ### `GET /v1/health`
 
 Status, ephemeris version + ayanamsa, and cache statistics.

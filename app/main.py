@@ -15,7 +15,7 @@ from app.astronomy.core import init_ephemeris
 from app.config import get_settings
 from app.db import SessionLocal, ensure_engine_version, init_db
 from app.geo.seed import seed_cities
-from app.routers import cities, health, nakshatra, panchang
+from app.routers import chart, cities, health, nakshatra, panchang
 
 logging.basicConfig(
     level=logging.INFO,
@@ -59,6 +59,7 @@ app.include_router(health.router)
 app.include_router(cities.router)
 app.include_router(panchang.router)
 app.include_router(nakshatra.router)
+app.include_router(chart.router)
 
 
 @app.get("/", tags=["meta"])
@@ -67,5 +68,5 @@ def root():
         "service": "ShubhTithi",
         "docs": "/docs",
         "endpoints": ["/v1/health", "/v1/cities", "/v1/panchang",
-                      "/v1/panchang/range", "/v1/nakshatra-at"],
+                      "/v1/panchang/range", "/v1/nakshatra-at", "/v1/chart"],
     }

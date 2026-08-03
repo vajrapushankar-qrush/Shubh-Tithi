@@ -5,7 +5,7 @@ from datetime import date, time
 
 from fastapi import APIRouter, Query
 
-from app.api import ApiError
+from app.api import ApiError, resolve_zone
 from app.geo.tz import timezone_at
 from app.panchang.instant import nakshatra_at
 
@@ -27,4 +27,5 @@ def nakshatra_at_endpoint(
         if not tzname:
             raise ApiError(422, "tz_unresolved",
                            "Could not resolve timezone; pass tz explicitly.")
+    resolve_zone(tzname)  # 422 with a JSON body instead of an uncaught 500
     return nakshatra_at(date_, lat, lon, tzname, time_)

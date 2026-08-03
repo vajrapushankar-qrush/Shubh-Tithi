@@ -1,0 +1,1118 @@
+{
+  "instant": "1984-04-24T21:06:00+05:30",
+  "coordinates": {
+    "lat": 17.0,
+    "lon": 82.2,
+    "timezone": "Asia/Kolkata"
+  },
+  "ayanamsa": "lahiri",
+  "house_system": "whole_sign",
+  "node_type": "mean",
+  "ascendant": {
+    "longitude_sidereal": 229.589834,
+    "rashi": {
+      "number": 8,
+      "name": "Vrishchika"
+    },
+    "nakshatra": {
+      "number": 18,
+      "name": "Jyeshtha",
+      "pada": 1
+    },
+    "degree": 19.589834
+  },
+  "planets": [
+    {
+      "name": "Sun",
+      "longitude_sidereal": 10.995954,
+      "rashi": {
+        "number": 1,
+        "name": "Mesha"
+      },
+      "nakshatra": {
+        "number": 1,
+        "name": "Ashwini",
+        "pada": 4
+      },
+      "degree": 10.995954,
+      "house": 6,
+      "retrograde": false,
+      "speed_deg_per_day": 0.973765
+    },
+    {
+      "name": "Moon",
+      "longitude_sidereal": 299.017291,
+      "rashi": {
+        "number": 10,
+        "name": "Makara"
+      },
+      "nakshatra": {
+        "number": 23,
+        "name": "Dhanishta",
+        "pada": 2
+      },
+      "degree": 29.017291,
+      "house": 3,
+      "retrograde": false,
+      "speed_deg_per_day": 11.911184
+    },
+    {
+      "name": "Mars",
+      "longitude_sidereal": 212.42642,
+      "rashi": {
+        "number": 8,
+        "name": "Vrishchika"
+      },
+      "nakshatra": {
+        "number": 16,
+        "name": "Vishakha",
+        "pada": 4
+      },
+      "degree": 2.42642,
+      "house": 1,
+      "retrograde": true,
+      "speed_deg_per_day": -0.237471
+    },
+    {
+      "name": "Mercury",
+      "longitude_sidereal": 6.925641,
+      "rashi": {
+        "number": 1,
+        "name": "Mesha"
+      },
+      "nakshatra": {
+        "number": 1,
+        "name": "Ashwini",
+        "pada": 3
+      },
+      "degree": 6.925641,
+      "house": 6,
+      "retrograde": true,
+      "speed_deg_per_day": -0.674031
+    },
+    {
+      "name": "Jupiter",
+      "longitude_sidereal": 259.287477,
+      "rashi": {
+        "number": 9,
+        "name": "Dhanu"
+      },
+      "nakshatra": {
+        "number": 20,
+        "name": "Purva Ashadha",
+        "pada": 2
+      },
+      "degree": 19.287477,
+      "house": 2,
+      "retrograde": false,
+      "speed_deg_per_day": 0.016156
+    },
+    {
+      "name": "Venus",
+      "longitude_sidereal": 357.069808,
+      "rashi": {
+        "number": 12,
+        "name": "Meena"
+      },
+      "nakshatra": {
+        "number": 27,
+        "name": "Revati",
+        "pada": 4
+      },
+      "degree": 27.069808,
+      "house": 5,
+      "retrograde": false,
+      "speed_deg_per_day": 1.231069
+    },
+    {
+      "name": "Saturn",
+      "longitude_sidereal": 200.101824,
+      "rashi": {
+        "number": 7,
+        "name": "Tula"
+      },
+      "nakshatra": {
+        "number": 16,
+        "name": "Vishakha",
+        "pada": 1
+      },
+      "degree": 20.101824,
+      "house": 12,
+      "retrograde": true,
+      "speed_deg_per_day": -0.074089
+    },
+    {
+      "name": "Rahu",
+      "longitude_sidereal": 44.823748,
+      "rashi": {
+        "number": 2,
+        "name": "Vrishabha"
+      },
+      "nakshatra": {
+        "number": 4,
+        "name": "Rohini",
+        "pada": 2
+      },
+      "degree": 14.823748,
+      "house": 7,
+      "retrograde": false,
+      "speed_deg_per_day": -0.052992
+    },
+    {
+      "name": "Ketu",
+      "longitude_sidereal": 224.823748,
+      "rashi": {
+        "number": 8,
+        "name": "Vrishchika"
+      },
+      "nakshatra": {
+        "number": 17,
+        "name": "Anuradha",
+        "pada": 4
+      },
+      "degree": 14.823748,
+      "house": 1,
+      "retrograde": false,
+      "speed_deg_per_day": -0.052992
+    }
+  ],
+  "houses": [
+    {
+      "house": 1,
+      "rashi": {
+        "number": 8,
+        "name": "Vrishchika"
+      }
+    },
+    {
+      "house": 2,
+      "rashi": {
+        "number": 9,
+        "name": "Dhanu"
+      }
+    },
+    {
+      "house": 3,
+      "rashi": {
+        "number": 10,
+        "name": "Makara"
+      }
+    },
+    {
+      "house": 4,
+      "rashi": {
+        "number": 11,
+        "name": "Kumbha"
+      }
+    },
+    {
+      "house": 5,
+      "rashi": {
+        "number": 12,
+        "name": "Meena"
+      }
+    },
+    {
+      "house": 6,
+      "rashi": {
+        "number": 1,
+        "name": "Mesha"
+      }
+    },
+    {
+      "house": 7,
+      "rashi": {
+        "number": 2,
+        "name": "Vrishabha"
+      }
+    },
+    {
+      "house": 8,
+      "rashi": {
+        "number": 3,
+        "name": "Mithuna"
+      }
+    },
+    {
+      "house": 9,
+      "rashi": {
+        "number": 4,
+        "name": "Karka"
+      }
+    },
+    {
+      "house": 10,
+      "rashi": {
+        "number": 5,
+        "name": "Simha"
+      }
+    },
+    {
+      "house": 11,
+      "rashi": {
+        "number": 6,
+        "name": "Kanya"
+      }
+    },
+    {
+      "house": 12,
+      "rashi": {
+        "number": 7,
+        "name": "Tula"
+      }
+    }
+  ],
+  "navamsa": {
+    "ascendant": {
+      "longitude_sidereal": 266.308506,
+      "rashi": {
+        "number": 9,
+        "name": "Dhanu"
+      }
+    },
+    "planets": [
+      {
+        "name": "Sun",
+        "longitude_sidereal": 98.963586,
+        "rashi": {
+          "number": 4,
+          "name": "Karka"
+        },
+        "degree": 8.963586,
+        "house": 8,
+        "retrograde": false
+      },
+      {
+        "name": "Moon",
+        "longitude_sidereal": 171.155619,
+        "rashi": {
+          "number": 6,
+          "name": "Kanya"
+        },
+        "degree": 21.155619,
+        "house": 10,
+        "retrograde": false
+      },
+      {
+        "name": "Mars",
+        "longitude_sidereal": 111.83778,
+        "rashi": {
+          "number": 4,
+          "name": "Karka"
+        },
+        "degree": 21.83778,
+        "house": 8,
+        "retrograde": true
+      },
+      {
+        "name": "Mercury",
+        "longitude_sidereal": 62.330769,
+        "rashi": {
+          "number": 3,
+          "name": "Mithuna"
+        },
+        "degree": 2.330769,
+        "house": 7,
+        "retrograde": true
+      },
+      {
+        "name": "Jupiter",
+        "longitude_sidereal": 173.587293,
+        "rashi": {
+          "number": 6,
+          "name": "Kanya"
+        },
+        "degree": 23.587293,
+        "house": 10,
+        "retrograde": false
+      },
+      {
+        "name": "Venus",
+        "longitude_sidereal": 333.628272,
+        "rashi": {
+          "number": 12,
+          "name": "Meena"
+        },
+        "degree": 3.628272,
+        "house": 4,
+        "retrograde": false
+      },
+      {
+        "name": "Saturn",
+        "longitude_sidereal": 0.916416,
+        "rashi": {
+          "number": 1,
+          "name": "Mesha"
+        },
+        "degree": 0.916416,
+        "house": 5,
+        "retrograde": true
+      },
+      {
+        "name": "Rahu",
+        "longitude_sidereal": 43.413732,
+        "rashi": {
+          "number": 2,
+          "name": "Vrishabha"
+        },
+        "degree": 13.413732,
+        "house": 6,
+        "retrograde": false
+      },
+      {
+        "name": "Ketu",
+        "longitude_sidereal": 223.413732,
+        "rashi": {
+          "number": 8,
+          "name": "Vrishchika"
+        },
+        "degree": 13.413732,
+        "house": 12,
+        "retrograde": false
+      }
+    ],
+    "houses": [
+      {
+        "house": 1,
+        "rashi": {
+          "number": 9,
+          "name": "Dhanu"
+        }
+      },
+      {
+        "house": 2,
+        "rashi": {
+          "number": 10,
+          "name": "Makara"
+        }
+      },
+      {
+        "house": 3,
+        "rashi": {
+          "number": 11,
+          "name": "Kumbha"
+        }
+      },
+      {
+        "house": 4,
+        "rashi": {
+          "number": 12,
+          "name": "Meena"
+        }
+      },
+      {
+        "house": 5,
+        "rashi": {
+          "number": 1,
+          "name": "Mesha"
+        }
+      },
+      {
+        "house": 6,
+        "rashi": {
+          "number": 2,
+          "name": "Vrishabha"
+        }
+      },
+      {
+        "house": 7,
+        "rashi": {
+          "number": 3,
+          "name": "Mithuna"
+        }
+      },
+      {
+        "house": 8,
+        "rashi": {
+          "number": 4,
+          "name": "Karka"
+        }
+      },
+      {
+        "house": 9,
+        "rashi": {
+          "number": 5,
+          "name": "Simha"
+        }
+      },
+      {
+        "house": 10,
+        "rashi": {
+          "number": 6,
+          "name": "Kanya"
+        }
+      },
+      {
+        "house": 11,
+        "rashi": {
+          "number": 7,
+          "name": "Tula"
+        }
+      },
+      {
+        "house": 12,
+        "rashi": {
+          "number": 8,
+          "name": "Vrishchika"
+        }
+      }
+    ]
+  },
+  "dashas": {
+    "vimshottari": [
+      {
+        "level": "maha",
+        "lord": "Mars",
+        "start": "1984-04-24T21:06:00+05:30",
+        "end": "1988-04-30T16:40:27.207660+05:30",
+        "children": [
+          {
+            "level": "antar",
+            "lord": "Saturn",
+            "start": "1984-04-24T21:06:00+05:30",
+            "end": "1984-10-30T07:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mercury",
+            "start": "1984-10-30T07:40:27.207660+05:30",
+            "end": "1985-10-27T12:37:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Ketu",
+            "start": "1985-10-27T12:37:27.207660+05:30",
+            "end": "1986-03-25T16:04:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Venus",
+            "start": "1986-03-25T16:04:27.207660+05:30",
+            "end": "1987-05-25T19:04:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Sun",
+            "start": "1987-05-25T19:04:27.207660+05:30",
+            "end": "1987-09-30T15:10:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Moon",
+            "start": "1987-09-30T15:10:27.207660+05:30",
+            "end": "1988-04-30T16:40:27.207660+05:30"
+          }
+        ]
+      },
+      {
+        "level": "maha",
+        "lord": "Rahu",
+        "start": "1988-04-30T16:40:27.207660+05:30",
+        "end": "2006-05-01T04:40:27.207660+05:30",
+        "children": [
+          {
+            "level": "antar",
+            "lord": "Rahu",
+            "start": "1988-04-30T16:40:27.207660+05:30",
+            "end": "1991-01-11T20:52:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Jupiter",
+            "start": "1991-01-11T20:52:27.207660+05:30",
+            "end": "1993-06-06T11:16:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Saturn",
+            "start": "1993-06-06T11:16:27.207660+05:30",
+            "end": "1996-04-12T10:22:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mercury",
+            "start": "1996-04-12T10:22:27.207660+05:30",
+            "end": "1998-10-30T19:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Ketu",
+            "start": "1998-10-30T19:40:27.207660+05:30",
+            "end": "1999-11-18T07:58:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Venus",
+            "start": "1999-11-18T07:58:27.207660+05:30",
+            "end": "2002-11-18T01:58:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Sun",
+            "start": "2002-11-18T01:58:27.207660+05:30",
+            "end": "2003-10-12T19:22:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Moon",
+            "start": "2003-10-12T19:22:27.207660+05:30",
+            "end": "2005-04-12T16:22:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mars",
+            "start": "2005-04-12T16:22:27.207660+05:30",
+            "end": "2006-05-01T04:40:27.207660+05:30"
+          }
+        ]
+      },
+      {
+        "level": "maha",
+        "lord": "Jupiter",
+        "start": "2006-05-01T04:40:27.207660+05:30",
+        "end": "2022-05-01T04:40:27.207660+05:30",
+        "children": [
+          {
+            "level": "antar",
+            "lord": "Jupiter",
+            "start": "2006-05-01T04:40:27.207660+05:30",
+            "end": "2008-06-18T09:28:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Saturn",
+            "start": "2008-06-18T09:28:27.207660+05:30",
+            "end": "2010-12-30T16:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mercury",
+            "start": "2010-12-30T16:40:27.207660+05:30",
+            "end": "2013-04-06T14:16:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Ketu",
+            "start": "2013-04-06T14:16:27.207660+05:30",
+            "end": "2014-03-13T11:52:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Venus",
+            "start": "2014-03-13T11:52:27.207660+05:30",
+            "end": "2016-11-11T11:52:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Sun",
+            "start": "2016-11-11T11:52:27.207660+05:30",
+            "end": "2017-08-30T16:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Moon",
+            "start": "2017-08-30T16:40:27.207660+05:30",
+            "end": "2018-12-30T16:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mars",
+            "start": "2018-12-30T16:40:27.207660+05:30",
+            "end": "2019-12-06T14:16:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Rahu",
+            "start": "2019-12-06T14:16:27.207660+05:30",
+            "end": "2022-05-01T04:40:27.207660+05:30"
+          }
+        ]
+      },
+      {
+        "level": "maha",
+        "lord": "Saturn",
+        "start": "2022-05-01T04:40:27.207660+05:30",
+        "end": "2041-04-30T22:40:27.207660+05:30",
+        "children": [
+          {
+            "level": "antar",
+            "lord": "Saturn",
+            "start": "2022-05-01T04:40:27.207660+05:30",
+            "end": "2025-05-03T23:43:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mercury",
+            "start": "2025-05-03T23:43:27.207660+05:30",
+            "end": "2028-01-12T02:52:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Ketu",
+            "start": "2028-01-12T02:52:27.207660+05:30",
+            "end": "2029-02-19T22:31:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Venus",
+            "start": "2029-02-19T22:31:27.207660+05:30",
+            "end": "2032-04-21T13:31:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Sun",
+            "start": "2032-04-21T13:31:27.207660+05:30",
+            "end": "2033-04-03T13:13:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Moon",
+            "start": "2033-04-03T13:13:27.207660+05:30",
+            "end": "2034-11-02T20:43:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mars",
+            "start": "2034-11-02T20:43:27.207660+05:30",
+            "end": "2035-12-12T16:22:27.207661+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Rahu",
+            "start": "2035-12-12T16:22:27.207661+05:30",
+            "end": "2038-10-18T15:28:27.207661+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Jupiter",
+            "start": "2038-10-18T15:28:27.207661+05:30",
+            "end": "2041-04-30T22:40:27.207660+05:30"
+          }
+        ]
+      },
+      {
+        "level": "maha",
+        "lord": "Mercury",
+        "start": "2041-04-30T22:40:27.207660+05:30",
+        "end": "2058-05-01T04:40:27.207660+05:30",
+        "children": [
+          {
+            "level": "antar",
+            "lord": "Mercury",
+            "start": "2041-04-30T22:40:27.207660+05:30",
+            "end": "2043-09-27T14:07:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Ketu",
+            "start": "2043-09-27T14:07:27.207660+05:30",
+            "end": "2044-09-23T19:04:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Venus",
+            "start": "2044-09-23T19:04:27.207660+05:30",
+            "end": "2047-07-25T16:04:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Sun",
+            "start": "2047-07-25T16:04:27.207660+05:30",
+            "end": "2048-05-31T03:10:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Moon",
+            "start": "2048-05-31T03:10:27.207660+05:30",
+            "end": "2049-10-30T13:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mars",
+            "start": "2049-10-30T13:40:27.207660+05:30",
+            "end": "2050-10-27T18:37:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Rahu",
+            "start": "2050-10-27T18:37:27.207660+05:30",
+            "end": "2053-05-16T03:55:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Jupiter",
+            "start": "2053-05-16T03:55:27.207660+05:30",
+            "end": "2055-08-22T01:31:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Saturn",
+            "start": "2055-08-22T01:31:27.207660+05:30",
+            "end": "2058-05-01T04:40:27.207660+05:30"
+          }
+        ]
+      },
+      {
+        "level": "maha",
+        "lord": "Ketu",
+        "start": "2058-05-01T04:40:27.207660+05:30",
+        "end": "2065-04-30T22:40:27.207660+05:30",
+        "children": [
+          {
+            "level": "antar",
+            "lord": "Ketu",
+            "start": "2058-05-01T04:40:27.207660+05:30",
+            "end": "2058-09-27T08:07:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Venus",
+            "start": "2058-09-27T08:07:27.207660+05:30",
+            "end": "2059-11-27T11:07:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Sun",
+            "start": "2059-11-27T11:07:27.207660+05:30",
+            "end": "2060-04-03T07:13:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Moon",
+            "start": "2060-04-03T07:13:27.207660+05:30",
+            "end": "2060-11-02T08:43:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mars",
+            "start": "2060-11-02T08:43:27.207660+05:30",
+            "end": "2061-03-31T12:10:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Rahu",
+            "start": "2061-03-31T12:10:27.207660+05:30",
+            "end": "2062-04-19T00:28:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Jupiter",
+            "start": "2062-04-19T00:28:27.207660+05:30",
+            "end": "2063-03-25T22:04:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Saturn",
+            "start": "2063-03-25T22:04:27.207660+05:30",
+            "end": "2064-05-03T17:43:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mercury",
+            "start": "2064-05-03T17:43:27.207660+05:30",
+            "end": "2065-04-30T22:40:27.207660+05:30"
+          }
+        ]
+      },
+      {
+        "level": "maha",
+        "lord": "Venus",
+        "start": "2065-04-30T22:40:27.207660+05:30",
+        "end": "2085-04-30T22:40:27.207660+05:30",
+        "children": [
+          {
+            "level": "antar",
+            "lord": "Venus",
+            "start": "2065-04-30T22:40:27.207660+05:30",
+            "end": "2068-08-30T10:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Sun",
+            "start": "2068-08-30T10:40:27.207660+05:30",
+            "end": "2069-08-30T16:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Moon",
+            "start": "2069-08-30T16:40:27.207660+05:30",
+            "end": "2071-05-01T10:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mars",
+            "start": "2071-05-01T10:40:27.207660+05:30",
+            "end": "2072-06-30T13:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Rahu",
+            "start": "2072-06-30T13:40:27.207660+05:30",
+            "end": "2075-07-01T07:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Jupiter",
+            "start": "2075-07-01T07:40:27.207660+05:30",
+            "end": "2078-03-01T07:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Saturn",
+            "start": "2078-03-01T07:40:27.207660+05:30",
+            "end": "2081-04-30T22:40:27.207661+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mercury",
+            "start": "2081-04-30T22:40:27.207661+05:30",
+            "end": "2084-02-29T19:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Ketu",
+            "start": "2084-02-29T19:40:27.207660+05:30",
+            "end": "2085-04-30T22:40:27.207660+05:30"
+          }
+        ]
+      },
+      {
+        "level": "maha",
+        "lord": "Sun",
+        "start": "2085-04-30T22:40:27.207660+05:30",
+        "end": "2091-05-01T10:40:27.207660+05:30",
+        "children": [
+          {
+            "level": "antar",
+            "lord": "Sun",
+            "start": "2085-04-30T22:40:27.207660+05:30",
+            "end": "2085-08-18T12:28:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Moon",
+            "start": "2085-08-18T12:28:27.207660+05:30",
+            "end": "2086-02-17T03:28:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mars",
+            "start": "2086-02-17T03:28:27.207660+05:30",
+            "end": "2086-06-24T23:34:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Rahu",
+            "start": "2086-06-24T23:34:27.207660+05:30",
+            "end": "2087-05-19T16:58:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Jupiter",
+            "start": "2087-05-19T16:58:27.207660+05:30",
+            "end": "2088-03-06T21:46:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Saturn",
+            "start": "2088-03-06T21:46:27.207660+05:30",
+            "end": "2089-02-16T21:28:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mercury",
+            "start": "2089-02-16T21:28:27.207660+05:30",
+            "end": "2089-12-24T08:34:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Ketu",
+            "start": "2089-12-24T08:34:27.207660+05:30",
+            "end": "2090-05-01T04:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Venus",
+            "start": "2090-05-01T04:40:27.207660+05:30",
+            "end": "2091-05-01T10:40:27.207660+05:30"
+          }
+        ]
+      },
+      {
+        "level": "maha",
+        "lord": "Moon",
+        "start": "2091-05-01T10:40:27.207660+05:30",
+        "end": "2101-05-01T22:40:27.207660+05:30",
+        "children": [
+          {
+            "level": "antar",
+            "lord": "Moon",
+            "start": "2091-05-01T10:40:27.207660+05:30",
+            "end": "2092-02-29T19:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mars",
+            "start": "2092-02-29T19:40:27.207660+05:30",
+            "end": "2092-09-29T21:10:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Rahu",
+            "start": "2092-09-29T21:10:27.207660+05:30",
+            "end": "2094-03-31T18:10:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Jupiter",
+            "start": "2094-03-31T18:10:27.207660+05:30",
+            "end": "2095-07-31T18:10:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Saturn",
+            "start": "2095-07-31T18:10:27.207660+05:30",
+            "end": "2097-03-01T01:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mercury",
+            "start": "2097-03-01T01:40:27.207660+05:30",
+            "end": "2098-07-31T12:10:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Ketu",
+            "start": "2098-07-31T12:10:27.207660+05:30",
+            "end": "2099-03-01T13:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Venus",
+            "start": "2099-03-01T13:40:27.207660+05:30",
+            "end": "2100-10-31T07:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Sun",
+            "start": "2100-10-31T07:40:27.207660+05:30",
+            "end": "2101-05-01T22:40:27.207660+05:30"
+          }
+        ]
+      },
+      {
+        "level": "maha",
+        "lord": "Mars",
+        "start": "2101-05-01T22:40:27.207660+05:30",
+        "end": "2108-05-01T16:40:27.207660+05:30",
+        "children": [
+          {
+            "level": "antar",
+            "lord": "Mars",
+            "start": "2101-05-01T22:40:27.207660+05:30",
+            "end": "2101-09-28T02:07:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Rahu",
+            "start": "2101-09-28T02:07:27.207660+05:30",
+            "end": "2102-10-16T14:25:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Jupiter",
+            "start": "2102-10-16T14:25:27.207660+05:30",
+            "end": "2103-09-22T12:01:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Saturn",
+            "start": "2103-09-22T12:01:27.207660+05:30",
+            "end": "2104-10-31T07:40:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Mercury",
+            "start": "2104-10-31T07:40:27.207660+05:30",
+            "end": "2105-10-28T12:37:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Ketu",
+            "start": "2105-10-28T12:37:27.207660+05:30",
+            "end": "2106-03-26T16:04:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Venus",
+            "start": "2106-03-26T16:04:27.207660+05:30",
+            "end": "2107-05-26T19:04:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Sun",
+            "start": "2107-05-26T19:04:27.207660+05:30",
+            "end": "2107-10-01T15:10:27.207660+05:30"
+          },
+          {
+            "level": "antar",
+            "lord": "Moon",
+            "start": "2107-10-01T15:10:27.207660+05:30",
+            "end": "2108-05-01T16:40:27.207660+05:30"
+          }
+        ]
+      }
+    ],
+    "balance_at_birth": {
+      "lord": "Mars",
+      "years": 4,
+      "months": 0,
+      "days": 5,
+      "total_years": 4.015922
+    },
+    "system": {
+      "name": "vimshottari",
+      "cycle_years": 120.0,
+      "year_days": 365.25,
+      "levels": [
+        "maha",
+        "antar"
+      ]
+    }
+  },
+  "doshas": {
+    "manglik": {
+      "value": true,
+      "reference": "lagna",
+      "reference_houses": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        12
+      ],
+      "mars_house_from_lagna": 1,
+      "mars_house_from_moon": 11,
+      "from_lagna": true,
+      "from_moon": false,
+      "from_lagna_strict": true,
+      "second_house_counted": true,
+      "note": "value == from_lagna, counting houses 1/2/4/7/8/12 from the ascendant. The 2nd house is disputed between schools; from_lagna_strict omits it."
+    },
+    "kaal_sarp": {
+      "value": false,
+      "side": null,
+      "note": "All seven grahas (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn) strictly between Rahu and Ketu on one side."
+    },
+    "sade_sati": {
+      "value": false,
+      "phase": null,
+      "saturn_transit_rashi": 12,
+      "natal_moon_rashi": 10,
+      "saturn_house_from_moon": 3,
+      "evaluated_at": "2026-08-03T02:58:14.404484+00:00",
+      "note": "Time-dependent: evaluated against Saturn's position at evaluated_at, not at birth. Exclude from fixture comparisons."
+    }
+  }
+}
