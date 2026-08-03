@@ -5,14 +5,18 @@ Reference for consumers integrating ShubhTithi. This document covers the
 astronomical conventions produce them, and where the behaviour will surprise
 you.
 
-Everything below was verified against the code at commit `c8c1094` by executing
+Everything below was verified against the code at commit `ed7ed22` by executing
 it, not by reading intent. Where something is **not implemented**, it says so.
 
+> **Changed in `ed7ed22`** (see [§8](#8-changelog)): invalid `tz` and
+> out-of-range `date` now return a **JSON 422** instead of a plain-text 500.
+> §3a, §5.1 and §5.3 have been rewritten accordingly — if you are re-reading
+> this document against notes from an earlier revision, those are the three
+> sections that moved.
+>
 > **See also:** [`CHART-API.md`](CHART-API.md) documents `GET /v1/chart` (natal
 > chart: ascendant, nine grahas with whole-sign houses, D9, Vimshottari dasha,
-> doshas). Two behaviours documented below have since **changed** — invalid
-> `tz` (§3a, §5.1) and out-of-range `date` (§5.3) now return a JSON **422**
-> instead of a plain-text 500. See `CHART-API.md` §9.
+> manglik / kaal sarp / sade sati).
 
 - Audience: backend integrators (written for the RR Matrimony Ashtakoota use case).
 - Service version: `0.1.0` · Python ≥ 3.12 · FastAPI · AGPL-3.0-or-later.
@@ -20,7 +24,8 @@ it, not by reading intent. Where something is **not implemented**, it says so.
   [`app/astronomy/core.py`](../app/astronomy/core.py),
   [`app/panchang/elements.py`](../app/panchang/elements.py),
   [`app/panchang/names.py`](../app/panchang/names.py),
-  [`app/routers/nakshatra.py`](../app/routers/nakshatra.py).
+  [`app/routers/nakshatra.py`](../app/routers/nakshatra.py),
+  [`app/api.py`](../app/api.py) (error envelopes and timezone validation).
 
 ---
 
@@ -36,13 +41,16 @@ it, not by reading intent. Where something is **not implemented**, it says so.
 | Ephemeris | Swiss Ephemeris via `pyswisseph` 2.10.03, running the **Moshier** built-in model in the deployed image. |
 | Auth | **None implemented.** `X-API-Key` is accepted-and-ignored (as is any header). |
 | Rate limits | **None implemented** in the application. |
+| Is there a birth chart? | **Yes**, `GET /v1/chart` — see [`CHART-API.md`](CHART-API.md). Not part of this endpoint. |
 
 **The three things most likely to bite you** — details in §5:
 
-1. `tz` accepts an **IANA name only**. Sending `"+05:30"` returns **HTTP 500**, not 422.
-2. If you omit `time`, the instant used is **local sunrise**, not midnight or noon.
-3. At high latitudes where the sun does not rise, the sunrise fallback silently
+1. If you omit `time`, the instant used is **local sunrise**, not midnight or noon.
+2. At high latitudes where the sun does not rise, the sunrise fallback silently
    uses **local midnight** while still reporting `"time_assumed": "sunrise"`.
+3. `tz` accepts an **IANA name only** — no UTC offsets, no abbreviations. This
+   is now a clean 422 rather than the 500 it used to be, but it is still a
+   rejection.
 
 ---
 
@@ -324,9 +332,9 @@ standard pydantic rendering of the Python type `str | None` — i.e.
 `anyOf: [{type: string}, {type: null}]`. The two branches are *string* and
 *null*, not two string formats.
 
-The value is passed straight to `zoneinfo.ZoneInfo(tz_name)`
-([`instant.py:31`](../app/panchang/instant.py#L31)), so it must be a key in the
-IANA tz database.
+The value must be a key in the IANA tz database. It is validated by
+`resolve_zone()` ([`app/api.py`](../app/api.py)) before any computation runs,
+then used as `zoneinfo.ZoneInfo(tz_name)`.
 
 Verified behaviour:
 
@@ -336,15 +344,26 @@ Verified behaviour:
 | `UTC` | ✅ 200 |
 | `Etc/GMT+9` | ✅ 200 |
 | omitted | ✅ 200 — derived from `lat`/`lon` |
-| `+05:30` | ❌ **HTTP 500**, body is the plain text `Internal Server Error` |
-| `IST` | ❌ **HTTP 500** |
-| `Not/AZone` | ❌ **HTTP 500** |
+| `+05:30` | ❌ **422 `invalid_timezone`** |
+| `IST` | ❌ **422 `invalid_timezone`** |
+| `Not/AZone` | ❌ **422 `invalid_timezone`** |
 
-**This is the sharpest edge in the API.** An invalid zone raises
-`ZoneInfoNotFoundError`, which is not an `ApiError` and has no exception
-handler, so FastAPI surfaces it as a bare 500 with a **non-JSON body**. Your
-client must not assume an error response is JSON — parsing it as
-`{"error": {...}}` will itself throw.
+The rejection body is a normal error envelope:
+
+```json
+{
+  "error": {
+    "code": "invalid_timezone",
+    "message": "Unknown IANA timezone: '+05:30'.",
+    "detail": "Expected an IANA timezone name such as 'Asia/Kolkata'. UTC offsets ('+05:30') and abbreviations ('IST') are not accepted. (ZoneInfoNotFoundError)"
+  }
+}
+```
+
+> **Changed in `ed7ed22`.** This used to be an uncaught `ZoneInfoNotFoundError`
+> surfacing as a bare **HTTP 500 with a `text/plain` body**. If you have a
+> contract test pinning `500`, or a client that special-cases a non-JSON error
+> here, both need updating. See [§8](#8-changelog).
 
 Send a validated IANA name. For Indian births that is `Asia/Kolkata` for
 essentially all of them.
@@ -532,11 +551,16 @@ the domain root rather than a subpath, and it emits no `Cache-Control` headers.
 
 Things you would otherwise discover in production.
 
-### 5.1 Invalid `tz` returns a non-JSON HTTP 500
+### 5.1 Invalid `tz` is rejected — 422, not a fallback
 
-Covered in §3a. `+05:30`, `IST`, or any non-IANA string yields a **500** with
-the plain-text body `Internal Server Error`. Not a 422, and not JSON. Validate
-zone names client-side, and guard your error-path JSON parsing.
+Covered in §3a. `+05:30`, `IST`, or any non-IANA string yields
+**422 `invalid_timezone`** with a normal JSON envelope. The service never
+guesses a zone from a malformed value and never silently substitutes UTC, so a
+bad `tz` fails loudly rather than producing a chart-shifted result.
+
+This is no longer the trap it was — as of `ed7ed22` it is an ordinary
+validation error. It stays on this list only because the *rejection* still
+surprises people who expect an offset to work.
 
 ### 5.2 High latitude: the sunrise fallback silently becomes local midnight
 
@@ -575,15 +599,38 @@ the signature.
 
 ### 5.3 Supported date range
 
+The backend's own limit is expressed in Julian Days: the Moshier model spans
+**JD 625000.5 – 2818000.5**, which is `-3001-02-03` to `+3003-04-29` in the
+proleptic Gregorian calendar (roughly 3002 BCE to 3003 CE).
+
 | Bound | Value | Cause |
 |---|---|---|
-| Earliest | `0001-01-01` | Python/pydantic `date` minimum — years ≤ 0 are unrepresentable in the request |
-| Latest working | **year 3002** | Moshier model's range |
-| First failing | **year 3003** | HTTP **500** (uncaught exception) |
+| Earliest reachable | `0001-01-01` | Python/pydantic `date` minimum — years ≤ 0 cannot be expressed in the request at all, so the ephemeris' BCE range is unreachable |
+| Latest working for any time of day | **`3003-04-28`** | Last date wholly inside the Moshier range |
+| Beyond that | **422 `ephemeris_range`** | Clean JSON rejection |
 
-Verified by bisection. Every year from 1 through 3002 returns 200. Beyond 3002
-you get a bare 500, not a clean 422. Irrelevant for matrimony use, but there is
-no graceful range error.
+Because the limit is an *instant* (JD 2818000.5 = `3003-04-29` 00:00 UT) rather
+than a date, the final day is partial: `3003-04-29` succeeds only for instants
+before 00:00 UT, which for any eastern timezone means it does not succeed at
+all. Verified by bisection — every year from 1 through 3002 returns 200,
+`3003-04-28` at 12:00 IST returns 200, and `3003-04-29` at 12:00 IST returns
+422.
+
+```json
+{
+  "error": {
+    "code": "ephemeris_range",
+    "message": "Date is outside the supported ephemeris range.",
+    "detail": "swisseph.calc_ut: jd 2999573.963647 outside Moshier's Moon range 625000.50 .. 2818000.50 "
+  }
+}
+```
+
+> **Changed in `ed7ed22`.** This used to be an uncaught `swisseph.Error`
+> surfacing as a bare HTTP 500. See [§8](#8-changelog).
+
+Irrelevant for matrimony use either way, but the failure is now diagnosable
+from the response body.
 
 ### 5.4 Historical timezones — correct via tzdata, with a pre-1906 surprise
 
@@ -666,10 +713,13 @@ as a timed birth.
   plausibility (§3c).
 - **The `X-API-Key` you send is ignored** (§4a) — do not infer from a 200 that
   your key was accepted.
-- **`error.detail` is a Python repr**, not JSON (§3c). Branch on `error.code`.
-- **Error shape is inconsistent**: handled errors return
-  `{"error": {"code", "message", "detail"}}`; unhandled ones (bad `tz`,
-  out-of-range dates) return plain-text 500.
+- **`error.detail` is a Python repr** for `validation_error`, not JSON (§3c).
+  Branch on `error.code`, treat `detail` as opaque human-readable text.
+- **Every error is now a JSON envelope** — `{"error": {"code", "message",
+  "detail"}}` — including the two cases that used to return plain-text 500s
+  (§5.1, §5.3). A genuinely unhandled exception would still produce a
+  non-envelope 500, so defensive parsing is still worth keeping, but there is
+  no longer a *known* path that does.
 - **Ayanamsa correctness depends on a per-thread fix.** pyswisseph stores the
   sidereal mode per thread, and FastAPI runs sync endpoints on a worker pool, so
   a mode set once at startup would not apply to request threads — they would
@@ -688,8 +738,8 @@ as a timed birth.
 
 1. **Always send `time`** when known — avoids §5.2 entirely and removes the
    largest error source (§5.6).
-2. **Always send `tz`** as a validated IANA name — avoids the 500 in §5.1 and
-   the 1.5 s cold-start polygon load in §3a.
+2. **Always send `tz`** as a validated IANA name — avoids the `invalid_timezone`
+   rejection in §5.1 and the 1.5 s cold-start polygon load in §3a.
 3. Send **local civil date/time**, not UTC (§3d).
 4. **Key on `nakshatra.number` and `moon_rashi.number`**, never on the name
    strings (§2c).
@@ -701,8 +751,12 @@ as a timed birth.
    birth-time-unknown and degrade the Guna Milan confidence (§5.6).
 7. **Persist the computed values** at profile creation rather than calling at
    match time (§4b), storing the service version alongside them.
-8. **Do not assume error bodies are JSON** (§5.1, §5.7).
+8. **Branch on `error.code`**, not on status or message text (§5.7). All known
+   error paths now return the JSON envelope.
 9. **Keep calls server-side** — no auth, no rate limiting, no CORS (§4a).
+10. **Need the ascendant, houses, dashas or Mars' house for manglik?** Those are
+    on `GET /v1/chart`, not here — see [`CHART-API.md`](CHART-API.md). This
+    endpoint returns the moon only.
 
 ---
 
@@ -718,5 +772,45 @@ Not answerable from the code; listed so they are not mistaken for settled facts.
 4. Will Swiss Ephemeris data files ever ship in the image, and would that be a
    versioned change? Results would shift by seconds of arc (§1c).
 5. Is the §5.2 high-latitude fallback intended? A distinct
-   `"time_assumed": "midnight_no_sunrise"` would make it detectable.
-6. Should `date` beyond year 3002 and invalid `tz` return 422 instead of 500?
+   `"time_assumed": "midnight_no_sunrise"` would make it detectable. **Still
+   open** — this is the one known silent-wrongness path left in this endpoint,
+   and it is a two-line fix whenever you want it.
+
+Resolved since the first revision of this document:
+
+- ~~Should `date` beyond the ephemeris range and invalid `tz` return 422 instead
+  of 500?~~ **Done in `ed7ed22`** — both are JSON 422s now (§8).
+
+---
+
+## 8. Changelog
+
+### `ed7ed22` — chart endpoint; two error paths corrected
+
+**Added:** `GET /v1/chart`, documented separately in
+[`CHART-API.md`](CHART-API.md). It does not change this endpoint's behaviour,
+but note that a chart and a `/v1/nakshatra-at` call for the same instant now
+agree on the moon **exactly** — identical `longitude_sidereal`, `nakshatra`
+(including `pada`), `rashi` and `instant`. That equality is asserted in the
+test suite and is a useful integration canary.
+
+**Changed — two behaviours that were previously plain-text HTTP 500s are now
+JSON 422s.** Both affect `/v1/nakshatra-at`, not just the new endpoint:
+
+| Trigger | Was | Now |
+|---|---|---|
+| `tz` not an IANA name (`+05:30`, `IST`, …) | 500, `text/plain` | **422 `invalid_timezone`** |
+| `date` outside the ephemeris range | 500, `text/plain` | **422 `ephemeris_range`** |
+
+The first was explicitly requested by the Navodayam integration; the second is
+the same defect class and came along with the handler.
+
+**Migration note.** If you have contract tests pinning `500` for either case,
+they will now fail. If your client special-cases a non-JSON error body on these
+paths, that branch is now dead code. Nothing else about the request or success
+response changed — no field was added, removed, renamed or re-typed on
+`/v1/nakshatra-at`.
+
+**Unchanged:** ayanamsa (Lahiri, still not configurable), the Moshier ephemeris
+backend, the sunrise fallback and its high-latitude bug (§5.2), auth, rate
+limiting, CORS, hosting.
