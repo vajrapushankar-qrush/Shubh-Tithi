@@ -1,0 +1,39 @@
+{
+  "_README": [
+    "Coordinate corrections applied on top of cities.min.json at seed time.",
+    "",
+    "cities.min.json is a trimmed copy of the upstream CSC dataset, so editing",
+    "it directly would lose these fixes the next time it is refreshed. Keeping",
+    "them here means a refresh picks the corrections back up, and the reason for",
+    "each one stays attached to it.",
+    "",
+    "Only add a row where the bundled coordinate is demonstrably not the city.",
+    "A tenth of a degree of longitude moves sunrise by ~24 seconds, so this is",
+    "worth doing for a city we publish muhurat pages for and not worth doing to",
+    "chase the last few metres.",
+    "",
+    "After changing this file, re-seed: `uv run python -m scripts.seed --force`.",
+    "Cached day rows for a corrected city are dropped automatically, because",
+    "they were computed from the wrong sunrise."
+  ],
+  "corrections": [
+    {
+      "id": 132201,
+      "name": "Jaipur",
+      "lat": 26.9124,
+      "lon": 75.7873,
+      "was": { "lat": 27.0, "lon": 76.0 },
+      "why": "CSC carries a quarter-degree grid point, not the city. The bundled longitude is ~0.21 deg east of Jaipur, which puts sunrise about 50 seconds early.",
+      "source": "Wikipedia / GeoNames city point for Jaipur, Rajasthan"
+    },
+    {
+      "id": 131633,
+      "name": "Cuttack",
+      "lat": 20.4625,
+      "lon": 85.883,
+      "was": { "lat": 20.5, "lon": 86.25 },
+      "why": "Same quarter-degree grid problem, and worse: the bundled longitude is ~0.37 deg east, which puts sunrise about 90 seconds early.",
+      "source": "Wikipedia / GeoNames city point for Cuttack, Odisha"
+    }
+  ]
+}

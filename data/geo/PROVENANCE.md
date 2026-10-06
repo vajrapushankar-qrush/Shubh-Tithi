@@ -25,6 +25,20 @@ The heavy `translations`, `native`, and `wikiDataId` fields were dropped,
 shrinking the file to ~22 MB. No coordinates were modified (only rounded to 5
 decimal places, ~1 m precision).
 
+## Corrections
+
+A few CSC rows carry a quarter-degree grid point rather than the city itself.
+`corrections.json` holds the fixes, applied over the dataset at seed time and
+re-applied on every start, so an already-seeded database picks up a correction
+added later without re-seeding 150k rows.
+
+Corrections live beside the dataset instead of being edited into it: this file
+is a trimmed copy of upstream, so a refresh would otherwise silently undo them.
+
+Sunrise is what every tithi and nakshatra boundary is read against, so this is
+not cosmetic — Cuttack's bundled longitude was 0.37 deg east of the city, which
+put sunrise about 88 seconds early, every day.
+
 ## Coverage
 
 153,728 cities across 218 countries, e.g. United States 19,786 · Australia

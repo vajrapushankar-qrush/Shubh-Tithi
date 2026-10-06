@@ -14,7 +14,7 @@ from app.api import install_error_handlers
 from app.astronomy.core import init_ephemeris
 from app.config import get_settings
 from app.db import SessionLocal, ensure_engine_version, init_db
-from app.geo.seed import seed_cities
+from app.geo.seed import apply_corrections, seed_cities
 from app.routers import chart, cities, health, nakshatra, panchang
 
 logging.basicConfig(
@@ -38,6 +38,11 @@ async def lifespan(app: FastAPI):
                         "(global events + city days will recompute on demand).")
     # First-run seed is idempotent and quick (~a few seconds for ~150k cities).
     count = seed_cities()
+    # Runs every start, not just the first: a correction added after a database
+    # was seeded would otherwise never reach it. No-ops when nothing changed.
+    corrected = apply_corrections()
+    if corrected:
+        log.info("Applied %d coordinate correction(s)", corrected)
     log.info("Cities available: %d", count)
     yield
 
