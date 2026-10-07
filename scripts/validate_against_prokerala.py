@@ -60,6 +60,10 @@ TOKEN_URL = "https://api.prokerala.com/token"
 PANCHANG_URL = "https://api.prokerala.com/v2/astrology/panchang"
 AYANAMSA_LAHIRI = 1
 CREDITS_PER_CALL = 10  # Basic Panchang, English.
+# Moshier against the SE data files moves a limb boundary by a few seconds —
+# the probe showed 2s on tithi and 21s on nakshatra, the Moon being faster.
+# Two minutes is far outside that, so anything beyond it is worth a look.
+BOUNDARY_TOLERANCE_SECONDS = 120
 
 # The cities we publish muhurat pages for. The claim being validated is about
 # these, so this is what to test deeply — not a shallow sample of the 153k-row
@@ -315,6 +319,15 @@ def _first_name(value: Any) -> str | None:
     return value if isinstance(value, str) else None
 
 
+def _first_end(value: Any) -> datetime | None:
+    """When the first span of a limb ends, from either side's shape."""
+    if isinstance(value, list) and value:
+        value = value[0]
+    if isinstance(value, dict):
+        return _clock(value.get("end"))
+    return None
+
+
 def _clock(value: Any) -> datetime | None:
     if isinstance(value, str):
         try:
@@ -385,9 +398,17 @@ def assert_mapping_holds(theirs: dict, ours: dict) -> None:
     raise RuntimeError("\n".join(lines))
 
 
-def compare(case: Case, theirs: dict, ours: dict) -> list[dict]:
+def compare(case: Case, theirs: dict, ours: dict) -> tuple[list[dict], dict]:
+    """Returns (issues worth reporting, drift in seconds per field).
+
+    The drift is recorded for EVERY comparison, not just the failing ones. A
+    few seconds each is Moshier against the SE files and means nothing alone —
+    but the same small drift in the same direction across 254 comparisons is an
+    ayanamsa difference, and only the aggregate can show that.
+    """
     data = theirs.get("data", theirs)
     issues: list[dict] = []
+    drifts: dict[str, float] = {}
 
     for field_name, their_key, our_key in (
         ("sunrise", "sunrise", "sunrise"),
@@ -403,6 +424,22 @@ def compare(case: Case, theirs: dict, ours: dict) -> list[dict]:
                 })
 
     for field_name in ("tithi", "nakshatra", "yoga", "karana"):
+        # The boundary time is a far more sensitive probe than the name. Names
+        # only disagree when a limb changes within a minute of sunrise; the end
+        # time drifts the moment the ayanamsa or the Moon's position does, and
+        # a SYSTEMATIC drift — every field, same sign, same size — is the
+        # signature of an ayanamsa mismatch that no name check would ever show.
+        ta, tb = _first_end(data.get(field_name)), _first_end(ours.get(field_name))
+        if ta and tb:
+            drift = (ta - tb).total_seconds()
+            drifts[field_name] = round(drift, 1)
+            if abs(drift) > BOUNDARY_TOLERANCE_SECONDS:
+                issues.append({
+                    "field": f"{field_name} end", "theirs": ta.isoformat(),
+                    "ours": tb.isoformat(), "delta_seconds": round(drift),
+                    "likely": classify(field_name, drift),
+                })
+
         a = _first_name(data.get(field_name))
         b = _first_name(ours.get(field_name))
         if a and b and a.split()[0].lower() != b.split()[0].lower():
@@ -414,7 +451,7 @@ def compare(case: Case, theirs: dict, ours: dict) -> list[dict]:
                 "field": field_name, "theirs": a, "ours": b, "delta_seconds": None,
                 "likely": "AYANAMSA, or a limb changing right at sunrise",
             })
-    return issues
+    return issues, drifts
 
 
 # --------------------------------------------------------------------------
@@ -502,6 +539,7 @@ def main() -> int:
     from app.db import City, SessionLocal
     failures = 0
     checked_mapping = False
+    all_drifts: list[dict] = []
     with args.out.open("a") as fh:
         for i, c in enumerate(todo, 1):
             with SessionLocal() as s:
@@ -517,7 +555,7 @@ def main() -> int:
                     assert_mapping_holds(theirs, ours)
                     checked_mapping = True
                     print("  field mapping verified on the first response\n")
-                issues = compare(c, theirs, ours)
+                issues, drifts = compare(c, theirs, ours)
             except ProkeralaError as err:
                 print(f"  [{i}/{len(todo)}] {c.city} {c.day}:\n{err}")
                 if err.status in (401, 403):
@@ -532,8 +570,9 @@ def main() -> int:
             fh.write(json.dumps({
                 "key": c.key(), "city": c.city, "city_id": c.city_id,
                 "date": c.day.isoformat(), "tz": c.tz, "reason": c.reason,
-                "issues": issues,
+                "issues": issues, "drifts": drifts,
             }) + "\n")
+            all_drifts.append(drifts)
             fh.flush()
 
             if issues:
@@ -550,6 +589,19 @@ def main() -> int:
                 time.sleep(interval - elapsed)
 
     print(f"\n{len(todo) - failures}/{len(todo)} agreed. Results: {args.out}")
+
+    if all_drifts:
+        print("\nBoundary drift vs Prokerala (seconds; + means they are later):")
+        for field_name in ("tithi", "nakshatra", "yoga", "karana"):
+            vals = sorted(d[field_name] for d in all_drifts if field_name in d)
+            if not vals:
+                continue
+            median = vals[len(vals) // 2]
+            print(f"  {field_name:<10} median {median:+7.1f}   "
+                  f"range {vals[0]:+.1f} to {vals[-1]:+.1f}   n={len(vals)}")
+        print("\n  A median of a few seconds is Moshier against the SE files.")
+        print("  A median in the minutes, same sign across all four, is an")
+        print("  ayanamsa difference and worth chasing.")
     return 1 if failures else 0
 
 
