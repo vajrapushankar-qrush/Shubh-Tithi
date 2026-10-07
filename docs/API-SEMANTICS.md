@@ -95,6 +95,16 @@ A worked boundary case: for a birth on **1988-03-01 21:35 UT**, Lahiri gives
 **Ashlesha** and Raman gives **Magha**. Under Ashtakoota that flips the
 Gana, Yoni, Nadi and Tara koota inputs simultaneously.
 
+> Measured against Prokerala (October 2026, 254 comparisons across 38 cities):
+> our boundaries sit about **12 arcseconds** of ayanamsa from theirs. The
+> arithmetic is what identifies it — tithi and karana depend on the Sun-Moon
+> *elongation* and are ayanamsa-independent, and those agreed to the second
+> (median 0s, range ±3s). Nakshatra and yoga depend on sidereal *longitude* and
+> drifted -22s and -41s. The ratio 41/22 = 1.86 is exactly twice the Moon's
+> rate over the Sun-plus-Moon rate, which is the signature of an ayanamsa
+> offset and nothing else. Twelve arcseconds is a different flavour of Lahiri,
+> and far too small to move a muhurat window.
+>
 > There is a subtlety in "Lahiri" itself: Swiss Ephemeris' `SIDM_LAHIRI` is the
 > Calendar Reform Committee definition. Some Indian almanac publishers use
 > slightly different Lahiri realisations (differences of a few arc-seconds).
@@ -393,6 +403,17 @@ refraction** (Swiss Ephemeris default; the published-almanac convention).
 Configurable service-side via `SHUBHTITHI_SUNRISE_UPPER_LIMB` and
 `SHUBHTITHI_SUNRISE_REFRACTION`, both defaulting to `true`. Not settable per
 request.
+
+> **This is where we differ from some other APIs, and it is deliberate.**
+> Prokerala reckons sunrise and sunset **geometrically** — centre of the disc,
+> no refraction — which puts their sunrise four to five minutes later than ours
+> and their sunset the same amount earlier. Measured, not assumed: against
+> Prokerala's own sunsets, our geometric figure matched to the second at
+> Melbourne on 2027-06-21 (17:03:13) and 2027-12-21 (20:36:38), and to one
+> second at Sydney on 2027-04-05.
+>
+> Keep the upper limb with refraction. It is what a printed panchang prints,
+> and it is the number a reader will check us against.
 
 In the example above, sunrise (05:41:46) vs. the real birth time (14:35) changed
 the **pada from 1 to 3** while leaving the nakshatra unchanged. That is typical:
