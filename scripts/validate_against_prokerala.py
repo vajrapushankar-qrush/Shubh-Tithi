@@ -192,6 +192,53 @@ def build_cases(year: int) -> list[Case]:
 # Prokerala
 # --------------------------------------------------------------------------
 
+# urllib's default User-Agent is "Python-urllib/3.x", which WAFs in front of
+# public APIs routinely reject with a bare 403 — no body, no explanation, and
+# nothing to do with your credentials. Identify ourselves properly.
+USER_AGENT = "ShubhSankalpa-panchang-validation/1.0 (+https://shubhsankalpa.com)"
+
+
+class ProkeralaError(RuntimeError):
+    """An API error carrying the response body, which is where the reason is."""
+
+    def __init__(self, status: int, body: str, url: str):
+        self.status, self.body = status, body
+        hint = {
+            400: "check the parameter format — coordinates are 'lat,lon' and "
+                 "datetime is ISO 8601 WITH an offset",
+            401: "the token was rejected; client id/secret wrong or rotated",
+            403: "authenticated but refused. Usually one of: the plan does not "
+                 "include this endpoint, credits are exhausted, or a WAF "
+                 "blocked the request. The body below says which",
+            429: "rate limited — lower --rpm (free tier allows 5/min)",
+        }.get(status, "")
+        super().__init__(
+            f"HTTP {status} from {url}\n"
+            + (f"  likely: {hint}\n" if hint else "")
+            + f"  response: {body[:600] or '(empty body)'}"
+        )
+
+
+def _send(req: urllib.request.Request) -> dict[str, Any]:
+    """Make the request, and turn an error into something that explains itself.
+
+    Without this a 403 arrives as a bare traceback, and the body Prokerala sent
+    saying exactly what was wrong is thrown away.
+    """
+    req.add_header("user-agent", USER_AGENT)
+    req.add_header("accept", "application/json")
+    try:
+        with urllib.request.urlopen(req, timeout=45) as res:
+            return json.load(res)
+    except urllib.error.HTTPError as err:
+        body = ""
+        try:
+            body = err.read().decode("utf-8", "replace")
+        except Exception:  # noqa: BLE001 — the status still matters
+            pass
+        raise ProkeralaError(err.code, body, req.full_url) from None
+
+
 class Prokerala:
     def __init__(self, client_id: str, client_secret: str):
         self._id, self._secret = client_id, client_secret
@@ -206,8 +253,7 @@ class Prokerala:
         }).encode()
         req = urllib.request.Request(TOKEN_URL, data=body, method="POST")
         req.add_header("content-type", "application/x-www-form-urlencoded")
-        with urllib.request.urlopen(req, timeout=30) as res:
-            data = json.load(res)
+        data = _send(req)
         self._token = data["access_token"]
         # Refresh a minute early; a token expiring mid-run would otherwise fail
         # a call an hour into a ninety-minute sweep.
@@ -222,17 +268,17 @@ class Prokerala:
             "datetime": when.isoformat(),
             "la": "en",
         })
-        req = urllib.request.Request(f"{PANCHANG_URL}?{params}")
-        req.add_header("authorization", f"Bearer {self._token}")
+        def call() -> dict[str, Any]:
+            req = urllib.request.Request(f"{PANCHANG_URL}?{params}")
+            req.add_header("authorization", f"Bearer {self._token}")
+            return _send(req)
+
         try:
-            with urllib.request.urlopen(req, timeout=45) as res:
-                return json.load(res)
-        except urllib.error.HTTPError as err:
-            if err.code == 401:          # token rejected — re-auth once
+            return call()
+        except ProkeralaError as err:
+            if err.status == 401:        # token rejected — re-auth once
                 self._authenticate()
-                req.add_header("authorization", f"Bearer {self._token}")
-                with urllib.request.urlopen(req, timeout=45) as res:
-                    return json.load(res)
+                return call()
             raise
 
 
@@ -385,7 +431,11 @@ def main() -> int:
         when = datetime(c.day.year, c.day.month, c.day.day, 6, 0,
                         tzinfo=ZoneInfo(c.tz))
         print(f"probe: {c.city} {c.day} ({lat},{lon})\n")
-        print(json.dumps(api.panchang(lat, lon, when), indent=2)[:4000])
+        try:
+            print(json.dumps(api.panchang(lat, lon, when), indent=2)[:4000])
+        except ProkeralaError as err:
+            print(f"✗ {err}\n")
+            return 1
         return 0
 
     # Resume: a ninety-minute run must not start over because of one timeout.
@@ -414,6 +464,13 @@ def main() -> int:
                 theirs = api.panchang(lat, lon, when)
                 ours = our_panchang(c.city_id, c.day)
                 issues = compare(c, theirs, ours)
+            except ProkeralaError as err:
+                print(f"  [{i}/{len(todo)}] {c.city} {c.day}:\n{err}")
+                if err.status in (401, 403):
+                    print("\n  Stopping: this will fail identically for every "
+                          "remaining call.")
+                    return 1
+                continue
             except Exception as err:  # noqa: BLE001 — one bad call must not end the run
                 print(f"  [{i}/{len(todo)}] {c.city} {c.day}: ERROR {err}")
                 continue
