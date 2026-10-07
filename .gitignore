@@ -27,3 +27,6 @@ data/ephe/
 .DS_Store
 .idea/
 .vscode/
+
+# Validation output (regenerated; may contain city/date sweeps)
+data/prokerala_validation.jsonl
