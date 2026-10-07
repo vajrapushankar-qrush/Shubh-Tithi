@@ -77,6 +77,52 @@ PUBLISHED_CITY_IDS = [
 
 
 # --------------------------------------------------------------------------
+# Database
+# --------------------------------------------------------------------------
+
+def ensure_database_ready() -> None:
+    """Bring the local database up the way the app does at startup.
+
+    This script talks to the panchang engine in-process rather than over HTTP,
+    so it has to do the preparation the FastAPI lifespan normally does. Without
+    it a fresh checkout dies on "no such table: cities", which says nothing
+    about what to do next.
+
+    init_ephemeris matters as much as the seed: it selects the ephemeris
+    backend, and comparing against Prokerala on a different backend from the
+    one production runs would be measuring the wrong thing.
+
+    Both this and production resolve to Moshier, because no .se1 files are
+    bundled and SHUBHTITHI_EPHEMERIS_PATH is unset — so the comparison does
+    reflect what we serve. Prokerala runs the full SE data files, which differ
+    from Moshier by a few arc-seconds: well under a second of sunrise, and only
+    visible at all when a limb changes within a minute of it. The backend is
+    printed on every run so a reader can see which one produced the numbers.
+    """
+    from app.astronomy.core import init_ephemeris
+    from app.config import get_settings
+    from app.db import SessionLocal, ensure_engine_version, init_db
+    from app.geo.seed import apply_corrections, cities_count, seed_cities
+
+    settings = get_settings()
+    backend = init_ephemeris(settings.ephemeris_path)
+    init_db()
+
+    with SessionLocal() as session:
+        if ensure_engine_version(session):
+            print("  engine version changed — computed cache rebuilt")
+        have = cities_count(session)
+
+    if not have:
+        print("  seeding cities (first run, ~150k rows, takes a moment)…")
+    count = seed_cities()
+    corrected = apply_corrections()
+
+    print(f"  ephemeris: {backend} · cities: {count:,}"
+          + (f" · corrected: {corrected}" if corrected else ""))
+
+
+# --------------------------------------------------------------------------
 # Sample selection
 # --------------------------------------------------------------------------
 
@@ -248,7 +294,7 @@ def classify(field_name: str, delta_seconds: float | None) -> str:
         return "COORDINATE — wrong point for the city"
     if minutes >= 1:
         return "coordinate precision, or sunrise definition"
-    return "sunrise definition (limb/refraction) — cosmetic"
+    return "sunrise definition, or Moshier vs SE files — expected, not a bug"
 
 
 def compare(case: Case, theirs: dict, ours: dict) -> list[dict]:
@@ -272,9 +318,13 @@ def compare(case: Case, theirs: dict, ours: dict) -> list[dict]:
         a = _first_name(data.get(field_name))
         b = _first_name(ours.get(field_name))
         if a and b and a.split()[0].lower() != b.split()[0].lower():
+            # One or two of these across the whole sweep is unremarkable: a
+            # limb that changes within a minute or two of sunrise can land
+            # either side of it on Moshier vs the SE data files. A pattern —
+            # the same city, or the same limb, repeatedly — is a real fault.
             issues.append({
                 "field": field_name, "theirs": a, "ours": b, "delta_seconds": None,
-                "likely": "AYANAMSA or sunrise boundary — the limb in force differs",
+                "likely": "AYANAMSA, or a limb changing right at sunrise",
             })
     return issues
 
@@ -299,6 +349,7 @@ def main() -> int:
                     default=ROOT / "data" / "prokerala_validation.jsonl")
     args = ap.parse_args()
 
+    ensure_database_ready()
     cases = build_cases(args.year)
     if args.limit:
         cases = cases[: args.limit]
