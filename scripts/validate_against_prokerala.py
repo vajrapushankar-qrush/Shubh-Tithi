@@ -65,6 +65,52 @@ CREDITS_PER_CALL = 10  # Basic Panchang, English.
 # Two minutes is far outside that, so anything beyond it is worth a look.
 BOUNDARY_TOLERANCE_SECONDS = 120
 
+# Prokerala reckons sunrise and sunset GEOMETRICALLY — centre of the disc, no
+# refraction. We use the upper limb with refraction, the published-almanac
+# convention and what a panchang reader compares against. The two differ by
+# four to five minutes consistently, which swamped everything else in the first
+# run: 254 identical "failures" that were a definition, not a fault.
+#
+# Verified, not assumed. Against Prokerala's own sunsets:
+#   Melbourne 2027-06-21  geometric 17:03:13  theirs 17:03:13  exact
+#   Melbourne 2027-12-21  geometric 20:36:38  theirs 20:36:38  exact
+#   Sydney    2027-04-05  geometric 17:41:42  theirs 17:41:43  1s
+#
+# So compare OUR geometric sunrise with theirs. What remains is then a real
+# fault — a wrong coordinate or timezone — which the offset was hiding.
+THEIR_SUNRISE_IS_GEOMETRIC = True
+
+# Keyed on the NORMALISED form, since normalisation runs first. Pairs that
+# romanisation separates but the tradition does not.
+NAME_ALIASES = {
+    "garij": "gar",          # Gara / Garija / Garaja — one karana
+    "vaidruti": "vaidriti",  # Vaidhriti / Vaidhruthi
+}
+
+
+def normalise_name(name: str) -> str:
+    """Reduce a limb name to something comparable across transliterations.
+
+    Comparing raw strings made "Shukla" vs "Sukla" and "Vishakha" vs "Vishaka"
+    look like disagreements. They are the same name spelled by two conventions,
+    and reporting them as faults buries the real findings.
+
+    Deliberately aggressive, so a safety check belongs with it: applied to all
+    27 nakshatras, 16 tithis and 11 karanas it still yields 27, 16 and 11
+    distinct keys, so it cannot merge two names that genuinely differ.
+    """
+    text = name.strip().lower()
+    for word in (" paksha", " nakshatra", " yoga", " karana", " tithi"):
+        text = text.replace(word, "")
+    text = text.strip()
+    for a, b in (("sh", "s"), ("th", "t"), ("dh", "d"), ("bh", "b"),
+                 ("ph", "p"), ("kh", "k"), ("gh", "g"), ("chh", "ch"),
+                 ("aa", "a"), ("ee", "i"), ("oo", "u"), ("ii", "i"),
+                 ("uu", "u"), ("w", "v"), ("-", ""), (" ", "")):
+        text = text.replace(a, b)
+    text = text.rstrip("a") or text
+    return NAME_ALIASES.get(text, text)
+
 # The cities we publish muhurat pages for. The claim being validated is about
 # these, so this is what to test deeply — not a shallow sample of the 153k-row
 # dataset we never serve.
@@ -290,6 +336,30 @@ class Prokerala:
 # Ours
 # --------------------------------------------------------------------------
 
+def geometric_sun(lat: float, lon: float, tz: str, day: date) -> dict[str, str]:
+    """Sunrise and sunset as Prokerala reckons them: disc centre, no refraction.
+
+    Not what we publish — this exists only so the comparison measures the same
+    quantity on both sides. Without it a four-minute convention difference
+    hides the coordinate and timezone faults this script is for.
+    """
+    from datetime import timezone as _utc
+
+    import swisseph as swe
+
+    from app.astronomy.core import rise_set
+
+    def at(rising: bool) -> str:
+        jd = rise_set(swe.julday(day.year, day.month, day.day, 0.0), swe.SUN,
+                      lat=lat, lon=lon, rising=rising,
+                      upper_limb=False, refraction=False)
+        y, m, d, frac = swe.revjul(jd)
+        moment = datetime(y, m, d, tzinfo=_utc.utc) + timedelta(hours=frac)
+        return moment.astimezone(ZoneInfo(tz)).isoformat()
+
+    return {"sunrise": at(True), "sunset": at(False)}
+
+
 def our_panchang(city_id: int, day: date) -> dict[str, Any]:
     from app.cache.city_cache import ensure_city_cached
     from app.db import City, SessionLocal
@@ -298,7 +368,10 @@ def our_panchang(city_id: int, day: date) -> dict[str, Any]:
     with SessionLocal() as session:
         city = session.get(City, city_id)
         ensure_city_cached(session, city, day, day)
-        return derive_panchang(session, city, day)
+        out = derive_panchang(session, city, day)
+        if THEIR_SUNRISE_IS_GEOMETRIC:
+            out["sun_geometric"] = geometric_sun(city.lat, city.lon, city.tz, day)
+        return out
 
 
 # --------------------------------------------------------------------------
@@ -377,7 +450,8 @@ def assert_mapping_holds(theirs: dict, ours: dict) -> None:
     ]
     missing_ours = [
         f for f in REQUIRED_FIELDS
-        if (_clock((ours.get("sun") or {}).get(f)) if f in ("sunrise", "sunset")
+        if (_clock((ours.get("sun_geometric") or ours.get("sun") or {}).get(f))
+            if f in ("sunrise", "sunset")
             else _first_name(ours.get(f))) is None
     ]
     if not missing_theirs and not missing_ours:
@@ -414,7 +488,8 @@ def compare(case: Case, theirs: dict, ours: dict) -> tuple[list[dict], dict]:
         ("sunrise", "sunrise", "sunrise"),
         ("sunset", "sunset", "sunset"),
     ):
-        a, b = _clock(data.get(their_key)), _clock((ours.get("sun") or {}).get(our_key))
+        our_sun = ours.get("sun_geometric") or ours.get("sun") or {}
+        a, b = _clock(data.get(their_key)), _clock(our_sun.get(our_key))
         if a and b:
             delta = (a - b).total_seconds()
             if abs(delta) > 60:
@@ -442,7 +517,7 @@ def compare(case: Case, theirs: dict, ours: dict) -> tuple[list[dict], dict]:
 
         a = _first_name(data.get(field_name))
         b = _first_name(ours.get(field_name))
-        if a and b and a.split()[0].lower() != b.split()[0].lower():
+        if a and b and normalise_name(a) != normalise_name(b):
             # One or two of these across the whole sweep is unremarkable: a
             # limb that changes within a minute or two of sunrise can land
             # either side of it on Moshier vs the SE data files. A pattern —
