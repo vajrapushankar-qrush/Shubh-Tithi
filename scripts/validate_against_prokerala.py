@@ -343,6 +343,48 @@ def classify(field_name: str, delta_seconds: float | None) -> str:
     return "sunrise definition, or Moshier vs SE files — expected, not a bug"
 
 
+REQUIRED_FIELDS = ("sunrise", "sunset", "tithi", "nakshatra", "yoga", "karana")
+
+
+def assert_mapping_holds(theirs: dict, ours: dict) -> None:
+    """Fail loudly if either side's fields cannot be read.
+
+    compare() only reports a difference when BOTH sides parse. So a response
+    shaped differently from what this script expects would produce no
+    differences at all — and the run would end with a confident "254/254
+    agreed" that had in fact compared nothing. A silent pass is far worse here
+    than a crash, because the whole point is assurance.
+
+    This runs once, on the first response, and describes what it actually got.
+    """
+    data = theirs.get("data", theirs)
+    missing_theirs = [
+        f for f in REQUIRED_FIELDS
+        if (_clock(data.get(f)) if f in ("sunrise", "sunset") else _first_name(data.get(f))) is None
+    ]
+    missing_ours = [
+        f for f in REQUIRED_FIELDS
+        if (_clock((ours.get("sun") or {}).get(f)) if f in ("sunrise", "sunset")
+            else _first_name(ours.get(f))) is None
+    ]
+    if not missing_theirs and not missing_ours:
+        return
+
+    lines = ["\nThe field mapping does not hold — refusing to report a "
+             "meaningless pass.\n"]
+    if missing_theirs:
+        lines.append(f"  Could not read from Prokerala: {', '.join(missing_theirs)}")
+        lines.append(f"  Its top-level keys: {sorted(data)[:20]}")
+        for f in missing_theirs:
+            if f in data:
+                lines.append(f"    {f} = {json.dumps(data[f])[:200]}")
+    if missing_ours:
+        lines.append(f"  Could not read from ours: {', '.join(missing_ours)}")
+        lines.append(f"  Our top-level keys: {sorted(ours)[:20]}")
+    lines.append("\n  Fix _first_name/_clock in this script to match, then re-run.")
+    raise RuntimeError("\n".join(lines))
+
+
 def compare(case: Case, theirs: dict, ours: dict) -> list[dict]:
     data = theirs.get("data", theirs)
     issues: list[dict] = []
@@ -432,10 +474,17 @@ def main() -> int:
                         tzinfo=ZoneInfo(c.tz))
         print(f"probe: {c.city} {c.day} ({lat},{lon})\n")
         try:
-            print(json.dumps(api.panchang(lat, lon, when), indent=2)[:4000])
+            theirs = api.panchang(lat, lon, when)
         except ProkeralaError as err:
             print(f"✗ {err}\n")
             return 1
+        print(json.dumps(theirs, indent=2)[:4000])
+        try:
+            assert_mapping_holds(theirs, our_panchang(c.city_id, c.day))
+        except RuntimeError as err:
+            print(err)
+            return 1
+        print("\n✓ every field this script compares was found on both sides")
         return 0
 
     # Resume: a ninety-minute run must not start over because of one timeout.
@@ -452,6 +501,7 @@ def main() -> int:
 
     from app.db import City, SessionLocal
     failures = 0
+    checked_mapping = False
     with args.out.open("a") as fh:
         for i, c in enumerate(todo, 1):
             with SessionLocal() as s:
@@ -463,6 +513,10 @@ def main() -> int:
             try:
                 theirs = api.panchang(lat, lon, when)
                 ours = our_panchang(c.city_id, c.day)
+                if not checked_mapping:
+                    assert_mapping_holds(theirs, ours)
+                    checked_mapping = True
+                    print("  field mapping verified on the first response\n")
                 issues = compare(c, theirs, ours)
             except ProkeralaError as err:
                 print(f"  [{i}/{len(todo)}] {c.city} {c.day}:\n{err}")
